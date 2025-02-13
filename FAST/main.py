@@ -44,6 +44,14 @@ def modificarUsuario(id:int, usuario:dict):
             return usuario
     raise HTTPException(status_code=400, detail="Usuario no coincide con el ID")
 
+#EndPoint Eliminar Usuario
+@app.delete('/eliminarUsuario/{id}', tags=['Operaciones CRUD'])
+def eliminarUsuario(id:int):
+    for usr in usuarios:
+        if usr["id"] == id:
+            usuarios.remove(usr)
+            return {"mensaje":"Usuario eliminado"}
+    raise HTTPException(status_code=400, detail="Ya se elimino el usuario")
 
 
 
