@@ -1,6 +1,6 @@
 from fastapi import FastAPI, HTTPException
 from typing import Optional, List
-from pydantic import BaseModel
+from models import modeloUsuario
 
 
 
@@ -14,11 +14,7 @@ app= FastAPI(
 
 
 #modelo de validaciopnes
-class modeloUsuario(BaseModel):
-    id:int
-    nombre:str
-    edad:int
-    correo:str
+
 
 #BD ficticia 
 usuarios=[
@@ -43,26 +39,25 @@ def home():
 #EndPoint COnsulta Usuarios
 @app.get('/todosUsuarios/', response_model= List[modeloUsuario] ,tags=['Operaciones CRUD'])
 def leerUsuarios():
-    return {"Los usuarios registrados son":usuarios}
+    return usuarios
 
 #EndPoint Agregar Nuevos
-@app.post('/agregarUsuario/', tags=['Operaciones CRUD'])
-def agregarUsuario(usuario:dict):
+@app.post('/agregarUsuario/', response_model= modeloUsuario ,tags=['Operaciones CRUD'])
+def agregarUsuario(usuario:modeloUsuario):
     for usr in usuarios:
-        if usr["id"] == usuario.get("id"):
+        if usr["id"] == usuario.id:
             raise HTTPException(status_code=400, detail="El ID ya existe")
     usuarios.append(usuario)
     return usuario
 
 #EndPoint Modificar Usuario
-@app.put('/modificarUsuario/{id}', tags=['Operaciones CRUD'])
-def modificarUsuario(id:int, usuario:dict):
-    for usr in usuarios:
-        if usr["id"] == usuario.get("id"):
-            usr["nombre"] = usuario.get("nombre")
-            usr["edad"] = usuario.get("edad")
-            return usuario
-    raise HTTPException(status_code=400, detail="Usuario no coincide con el ID")
+@app.put('/modificarUsuario/{id}', response_model= modeloUsuario, tags=['Operaciones CRUD'])
+def modificarUsuario(id:int, usuarioAcrtualizado:modeloUsuario):
+    for index, usr in enumerate(usuarios):
+        if usr["id"] == id:
+            usuarios[index] = usuarioAcrtualizado.model_dump()
+            return usuarios[index]
+    raise HTTPException(status_code=400, detail="Usuario no encontrado")
 
 #EndPoint Eliminar Usuario
 @app.delete('/eliminarUsuario/{id}', tags=['Operaciones CRUD'])
