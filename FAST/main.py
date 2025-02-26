@@ -1,5 +1,8 @@
 from fastapi import FastAPI, HTTPException
-from typing import Optional
+from typing import Optional, List
+from pydantic import BaseModel
+
+
 
 app= FastAPI(
     title= 'Mi primerAPI 192',
@@ -7,21 +10,38 @@ app= FastAPI(
     version= '1.0.1'
 )
 
+
+
+
+#modelo de validaciopnes
+class modeloUsuario(BaseModel):
+    id:int
+    nombre:str
+    edad:int
+    correo:str
+
+#BD ficticia 
 usuarios=[
-    {"id": 1,"nombre":"BaruchO","edad":20},
-    {"id": 2,"nombre":"Fernando","edad":22},
-    {"id": 3,"nombre":"Max","edad":20},
-    {"id": 4,"nombre":"Gera","edad":25}
+    {"id": 1,"nombre":"BaruchO","edad":20, "correo":"example1@example.com"},
+    {"id": 2,"nombre":"Fernando","edad":22, "correo":"example2@example.com"},
+    {"id": 3,"nombre":"Max","edad":20, "correo":"example3@example.com"},
+    {"id": 4,"nombre":"Gera","edad":25, "correo":"example4@example.com"},
 ]
+     
+    
+    
+    
+    
+    
+
 
 #Endpoint home
-
 @app.get('/', tags=['Hola Mundo'])
 def home():
     return {'hello':'world FastAPI'}
 
 #EndPoint COnsulta Usuarios
-@app.get('/todosUsuarios/', tags=['Operaciones CRUD'])
+@app.get('/todosUsuarios/', response_model= List[modeloUsuario] ,tags=['Operaciones CRUD'])
 def leerUsuarios():
     return {"Los usuarios registrados son":usuarios}
 

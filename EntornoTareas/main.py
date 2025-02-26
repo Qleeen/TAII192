@@ -58,3 +58,6 @@ def tareasEliminar(tarea_id: int):
             tarea_eliminada = tareas.pop(index)
             return tarea_eliminada 
     raise HTTPException(status_code=400, detail="Tarea no encontrada")
+
+
+
