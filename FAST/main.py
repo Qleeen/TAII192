@@ -1,6 +1,8 @@
 from fastapi import FastAPI, HTTPException
+from fastapi.responses import JSONResponse
 from typing import Optional, List
-from models import modeloUsuario
+from modelsPydantic import modeloUsuario, modeloAuth
+from genToken import createToken
 
 
 
@@ -35,6 +37,19 @@ usuarios=[
 @app.get('/', tags=['Hola Mundo'])
 def home():
     return {'hello':'world FastAPI'}
+
+#EndPoint Autenticación
+@app.post('/auth', tags=['Autentificacion'])
+def login(autorizacion:modeloAuth):
+    if autorizacion.correo == 'baruchsaur125@gmail.com' and autorizacion.passw == '12345678':
+        token:str = createToken(autorizacion.model_dump())
+        print(token)
+        return JSONResponse(token)
+    else:
+        return "Aviso: COntraseña incorrecta"
+
+
+
 
 #EndPoint COnsulta Usuarios
 @app.get('/todosUsuarios/', response_model= List[modeloUsuario] ,tags=['Operaciones CRUD'])
