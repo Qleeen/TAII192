@@ -1,8 +1,9 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Depends
 from fastapi.responses import JSONResponse
 from typing import Optional, List
 from modelsPydantic import modeloUsuario, modeloAuth
 from genToken import createToken
+from middlewares import BearerJWT
 
 
 
@@ -20,7 +21,7 @@ app= FastAPI(
 
 #BD ficticia 
 usuarios=[
-    {"id": 1,"nombre":"BaruchO","edad":20, "correo":"example1@example.com"},
+    {"id": 1,"nombre":"BaruchO","edad":20, "correo":"baruchsaur125@gmail.com"},
     {"id": 2,"nombre":"Fernando","edad":22, "correo":"example2@example.com"},
     {"id": 3,"nombre":"Max","edad":20, "correo":"example3@example.com"},
     {"id": 4,"nombre":"Gera","edad":25, "correo":"example4@example.com"},
@@ -52,7 +53,7 @@ def login(autorizacion:modeloAuth):
 
 
 #EndPoint COnsulta Usuarios
-@app.get('/todosUsuarios/', response_model= List[modeloUsuario] ,tags=['Operaciones CRUD'])
+@app.get('/todosUsuarios/', dependencies={Depends(BearerJWT())},response_model= List[modeloUsuario] ,tags=['Operaciones CRUD'])
 def leerUsuarios():
     return usuarios
 

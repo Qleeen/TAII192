@@ -7,5 +7,5 @@ class BearerJWT(HTTPBearer):
         data = validateToken(auth.credentials)
         if not isinstance(data, dict):
             raise HTTPException(status_code=401, detail='Token no válido')
-        if data.get('email') != 'ivan@example.com':
+        if data.get('correo') != 'baruchsaur125@gmail.com':
             raise HTTPException(status_code=403, detail='Credenciales no validas')

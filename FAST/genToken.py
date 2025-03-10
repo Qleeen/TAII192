@@ -1,5 +1,5 @@
-import iwt
-from iwt import ExpiredSignatureError, InvalidTokenError 
+import jwt
+from jwt import ExpiredSignatureError, InvalidTokenError 
 from fastapi import HTTPException
 
 def createToken(data:dict):
