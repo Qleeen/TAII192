@@ -1,5 +1,6 @@
 from fastapi import FastAPI, HTTPException, Depends
 from fastapi.responses import JSONResponse
+from fastapi.encoders import jsonable_encoder
 from typing import Optional, List
 from modelsPydantic import modeloUsuario, modeloAuth
 from genToken import createToken
@@ -53,10 +54,34 @@ def login(autorizacion:modeloAuth):
 
 
 #EndPoint COnsulta Usuarios
-@app.get('/todosUsuarios/', dependencies={Depends(BearerJWT())},response_model= List[modeloUsuario] ,tags=['Operaciones CRUD'])
+@app.get('/todosUsuarios/', tags=['Operaciones CRUD'])
 def leerUsuarios():
-    return usuarios
-
+    db = Session()
+    try:
+        consulta = db.query(User).all()
+        return JSONResponse(content=jsonable_encoder(consulta))
+    except Exception as e:
+        return JSONResponse(status_code=500,
+                            content={'message':'Error al consultar',
+                                     'error':str(e)})
+        
+        
+#EndPoint buscar por id
+@app.get('/buscarUsuario/{id}', tags=['Operaciones CRUD'])
+def BuscarUno(id:int):
+    db = Session()
+    try:
+        consultauno = db.query(User).filter(User.id == id).first()
+        if not consultauno:
+            return JSONResponse(status_code=404,content={'message':'Usuario no encontrado'})
+        return JSONResponse(content=jsonable_encoder(consultauno))
+    except Exception as e:
+        return JSONResponse(status_code=500,
+                            content={'message':'Error al consultar',
+                                     'error':str(e)})
+        
+    finally:
+        db.close()
 
 
 
@@ -78,7 +103,7 @@ def agregarUsuario(usuario:modeloUsuario):
         db.rollback()
         return JSONResponse(status_code=500,
                             content={'message':'Error al guardar el usuario',
-                                     'error':str(e)})
+                                     'Excepcioón':str(e)})
     finally:
         db.close()
 
